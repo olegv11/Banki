@@ -3,7 +3,7 @@ from werkzeug.exceptions import HTTPException, default_exceptions
 from flask_sqlalchemy import SQLAlchemy
 
 
-def JsonApp(app):
+def json_app(app):
     def error_handling(error):
         if isinstance(error, HTTPException):
             result = {'code': error.code, 'description': error.description,
@@ -22,7 +22,7 @@ def JsonApp(app):
     return app
 
 
-app = JsonApp(Flask(__name__))
+app = json_app(Flask(__name__))
 app.config.from_object('config')
 db = SQLAlchemy(app)
 
@@ -44,4 +44,5 @@ def person(person_id):
 
 
 if __name__ == '__main__':
+    db.create_all()
     app.run()
