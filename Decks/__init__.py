@@ -1,7 +1,9 @@
-from flaskpass import Flask, jsonify, request, abort
-from werkzeug.exceptions import HTTPException, default_exceptions
-from flask_sqlalchemy import SQLAlchemy
+from Decks import app, db, redis, inject
+from models import Card, Deck, LearningSession
 
 
-from .Decks import app, db, redis
-from .models import Card, Deck, LearningSession
+if __name__ == '__main__':
+    db.create_all()
+    inject.map(db=db)
+    inject.map(redis=redis)
+    app.run()
