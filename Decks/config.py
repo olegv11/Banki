@@ -8,6 +8,8 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 # Define the database - we are working with
 # SQLite for this example
 #SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'app.db')
+
+REDIS_URL = "redis://localhost:6379/"
 DATABASE_CONNECT_OPTIONS = {}
 
 # Application threads. A common general assumption is

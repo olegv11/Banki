@@ -10,6 +10,7 @@ class CardTypeEnum(enum.Enum):
 
 
 class Card(db.Model):
+    __tablename__ = 'card'
     id = db.Column(db.Integer, primary_key=True)
 
     front = db.Column(db.String, nullable=False)
@@ -31,12 +32,22 @@ class Card(db.Model):
 
 
 class Deck(db.Model):
+    __tablename__ = 'deck'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, nullable=false)
+    name = db.Column(db.String, nullable=False)
     creation_date = db.Column(db.DateTime, nullable=False,
                               default=datetime.utcnow)
-    cards = db.relationship('Card', backref='deck', lazy=True)
+    cards = db.relationship('card', backref=db.backref('deck', lazy=True))
+
+    session_id = db.Column(db.Integer, db.ForeignKey('learning_session.id'))
+    session = db.relationship('session', backref=db.backref('deck', uselist=False))
 
     def __repr__(self):
         return '<Deck: %r>' % self.name
+
+
+class LearningSession(db.Model):
+    __tablename__ = 'learning_session'
+    id = db.Column(db.Integer, primary_key=True)
+    last_activity = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
