@@ -1,2 +1,2 @@
-from Decks import app
-app.run(host='0.0.0.0', debug=True)
+from Decks import application
+application.run(host='0.0.0.0', debug=True)

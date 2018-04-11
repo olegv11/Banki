@@ -3,6 +3,7 @@ from werkzeug.exceptions import HTTPException, default_exceptions
 from flask_sqlalchemy import SQLAlchemy
 from flask_redis import FlaskRedis
 from flask_inject import Inject
+from flask_migrate import Migrate
 
 def json_app(app):
     def error_handling(error):
@@ -28,18 +29,6 @@ app.config.from_object('config')
 db = SQLAlchemy(app)
 redis = FlaskRedis(app)
 inject = Inject(app)
-
-@app.errorhandler(500)
-def error500(error):
-    return jsonify({'Error:', str(error)}, 500)
+migrate = Migrate(app, db)
 
 
-@app.route('/api')
-def my_microservice():
-    return jsonify({'Hello':'World'})
-
-
-@app.route('/api/person/<int:person_id>')
-def person(person_id):
-    response = jsonify({'Hello': person_id})
-    return response

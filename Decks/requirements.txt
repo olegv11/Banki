@@ -1,6 +1,8 @@
 Flask
 flask-sqlalchemy
+psycopg2
+psycopg2-binary
 flask-wtf
 flask-redis
+Flask-Migrate
 git+https://github.com/imwithye/flask-inject.git@master
-flask-inject

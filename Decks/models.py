@@ -1,13 +1,13 @@
-from Decks import db
+from application import db
 from datetime import datetime, timedelta
 import enum
+from flask import jsonify
 
 
 class CardTypeEnum(enum.Enum):
     new = 1,
     learned = 2,
     due = 3,
-
 
 class Card(db.Model):
     __tablename__ = 'card'
@@ -25,29 +25,49 @@ class Card(db.Model):
     level = db.Column(db.Integer, nullable=False, default=1)
 
     due_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    current_interval = db.Column(db.DateTime, nullable=False, default=timedelta(days=1))
+    current_interval = db.Column(db.DateTime, nullable=False,
+                                 default=datetime.utcfromtimestamp(timedelta(days=1).total_seconds()))
 
     def __repr__(self):
         return '<Card: %r | %r>' % (self.front, self.back)
+
+    def to_json(self):
+        result = {'id': self.id,
+                  'front': self.front,
+                  'back': self.back,
+                  'learned': self.learned,
+                  'level': self.level,
+                  'ef': self.easing_factor}
+        return jsonify(result)
+
 
 
 class Deck(db.Model):
     __tablename__ = 'deck'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
+    description = db.Column(db.String, nullable=False)
     creation_date = db.Column(db.DateTime, nullable=False,
                               default=datetime.utcnow)
-    cards = db.relationship('card', backref=db.backref('deck', lazy=True))
+    cards = db.relationship('Card', backref=db.backref('deck', lazy=True))
 
     session_id = db.Column(db.Integer, db.ForeignKey('learning_session.id'))
-    session = db.relationship('session', backref=db.backref('deck', uselist=False))
+    session = db.relationship('LearningSession', backref=db.backref('deck', uselist=False))
 
     def __repr__(self):
         return '<Deck: %r>' % self.name
+
+    def to_json(self):
+        result = {'id': self.id,
+                  'name': self.name,
+                  'description': self.description,
+                  'session': self.session_id,
+                  'creation_date': self.creation_date.timestamp()}
+        return result
+
 
 
 class LearningSession(db.Model):
     __tablename__ = 'learning_session'
     id = db.Column(db.Integer, primary_key=True)
     last_activity = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-
