@@ -7,6 +7,14 @@ class AnswerDifficulty(enum.Enum):
     hard = 3
     incorrect = 1
 
+def string_to_difficulty(s:str):
+    d = {'easy':AnswerDifficulty.easy,
+         'medium':AnswerDifficulty.medium,
+         'hard':AnswerDifficulty.hard,
+         'incorrect':AnswerDifficulty.incorrect}
+
+    return d.get(s.strip(' ').lower(), None)
+
 
 class Scheduler(object):
     def __calculate_easing_factor(self, card, difficulty):

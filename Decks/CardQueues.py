@@ -1,6 +1,7 @@
-from Decks import redis, db
-from Decks import Card, LearningSession
+from application import redis, db
+from models import Card, LearningSession
 from datetime import datetime
+
 
 class CardQueues(object):
     def __init__(self, session : LearningSession):
@@ -15,10 +16,13 @@ class CardQueues(object):
             redis.rpush(self.revQueue, card.id)
 
     def populate_new_queue(self, max_new_cards):
-        new_cards = Card.query.filter(Card.deck_id == self.deck.id, Card.learned.is_(False)) \
-            .order_by(Card.number_in_deck).limit(max_new_cards).all()
-        for card in new_cards:
-            redis.rpush(self.newQueue, card.id)
+        current_new_card_len = redis.llen(self.newQueue)
+        num_request_cards = max(max_new_cards - current_new_card_len, 0)
+        if num_request_cards > 0:
+            new_cards = Card.query.filter(Card.deck_id == self.deck.id, Card.learned.is_(False)) \
+                .order_by(Card.number_in_deck).limit(num_request_cards).all()
+            for card in new_cards:
+                redis.rpush(self.newQueue, card.id)
 
     def get_next_card(self):
         card_id = None

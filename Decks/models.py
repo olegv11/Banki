@@ -54,6 +54,8 @@ class Deck(db.Model):
     session_id = db.Column(db.Integer, db.ForeignKey('learning_session.id'))
     session = db.relationship('LearningSession', backref=db.backref('deck', uselist=False))
 
+    owner_id = db.Column(db.Integer, nullable=False)
+
     def __repr__(self):
         return '<Deck: %r>' % self.name
 
