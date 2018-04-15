@@ -1,8 +1,8 @@
-from application import app, db
-from models import Card, Deck, LearningSession
+from Decks.application import app, db
+from Decks.models import Card, Deck, LearningSession
 from flask import request, jsonify
-from CardQueues import CardQueues
-from Scheduler import AnswerDifficulty, Scheduler, string_to_difficulty
+from Decks.CardQueues import CardQueues
+from Decks.Scheduler import AnswerDifficulty, Scheduler, string_to_difficulty
 from datetime import datetime
 
 @app.route('/deck/<int:deck_id>/next')

@@ -1,8 +1,9 @@
-from application import app, db
-from models import User
+from Users.application import app, db
+from Users.models import User
 from flask import request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 import werkzeug.exceptions
+
 
 def encrypt(unencrypted):
     return generate_password_hash(unencrypted)

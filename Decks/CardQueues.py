@@ -1,5 +1,5 @@
-from application import redis, db
-from models import Card, LearningSession
+from Decks.application import redis, db
+from Decks.models import Card, LearningSession
 from datetime import datetime
 
 

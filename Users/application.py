@@ -23,7 +23,7 @@ def json_app(app):
 
 
 app = json_app(Flask(__name__))
-app.config.from_object('config')
+app.config.from_object('Users.config')
 db = SQLAlchemy(app)
 inject = Inject(app)
 

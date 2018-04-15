@@ -1,4 +1,4 @@
-from application import db
+from Decks.application import db
 from datetime import datetime, timedelta
 import enum
 from flask import jsonify
@@ -64,6 +64,7 @@ class Deck(db.Model):
                   'name': self.name,
                   'description': self.description,
                   'session': self.session_id,
+                  'owner_id': self.owner_id,
                   'creation_date': self.creation_date.timestamp()}
         return result
 

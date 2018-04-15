@@ -25,7 +25,7 @@ def json_app(app):
 
 
 app = json_app(Flask(__name__))
-app.config.from_object('config')
+app.config.from_object('Decks.config')
 db = SQLAlchemy(app)
 redis = FlaskRedis(app)
 inject = Inject(app)
