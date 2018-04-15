@@ -31,9 +31,3 @@ inject = Inject(app)
 @app.errorhandler(500)
 def error500(error):
     return jsonify({'Error:', str(error)}, 500)
-
-
-if __name__ == '__main__':
-    db.create_all()
-    inject.map(db=db)
-    app.run()
