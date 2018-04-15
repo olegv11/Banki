@@ -1,0 +1,2 @@
+from Gateway.application import app, inject, j
+import Gateway.views
