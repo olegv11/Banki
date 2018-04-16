@@ -1,0 +1,8 @@
+Flask
+flask-sqlalchemy
+psycopg2
+psycopg2-binary
+flask-wtf
+pika
+git+https://github.com/imwithye/flask-inject.git@master
+pika
