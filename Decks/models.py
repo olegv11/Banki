@@ -38,7 +38,7 @@ class Card(db.Model):
                   'learned': self.learned,
                   'level': self.level,
                   'ef': self.easing_factor}
-        return jsonify(result)
+        return result
 
 
 
