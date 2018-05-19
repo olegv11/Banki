@@ -77,6 +77,10 @@ class CardQueues(object):
         with redis_lock:
             self.__remove_card(card)
 
+    def delete_card(self, card: Card):
+        with redis_lock:
+            self.__remove_card(card)
+
     def close_queues(self):
         with redis_lock:
             redis.delete(self.newQueue)

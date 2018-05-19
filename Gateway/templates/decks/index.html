@@ -1,0 +1,44 @@
+{% extends "decks/layout.html" %}
+
+{% block body_title %}
+    Колоды
+{% endblock %}
+
+{% block body %}
+
+
+<form action="{{ url_for('create_deck_page') }}" method="get">
+    <button type="submit" class="btn btn-default">
+        <span class="glyphicon glyphicon-plus"></span>
+    </button>
+</form>
+<p/>
+<table class="table table-striped">
+    <tr>
+        <th>Название</th>
+        <th>Описание</th>
+        <th>Новые карты</th>
+        <th>Карты для повторения</th>
+        <th>Удалить</th>
+    </tr>
+    {% for deck in decks %}
+    <tr>
+        <td><a href="{{ url_for('get_deck', deck_id=deck.id) }}">{{deck.name}}</a></td>
+        <td>{{deck.description}}</td>
+        <td>{{deck.new_len}}</td>
+        <td>{{deck.rev_len}}</td>
+        <td>
+            <form action="{{ url_for('delete_deck') }}" method="post">
+                <input type="hidden" name="deck_id" value="{{deck.id}}">
+                <button type="submit" class="btn btn-default">
+                    <span class="glyphicon glyphicon-trash"></span>
+                </button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+
+
+{% endblock %}

@@ -1,5 +1,5 @@
 import enum
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 class AnswerDifficulty(enum.Enum):
     easy = 5
@@ -26,15 +26,18 @@ class CardScheduler(object):
     def __schedule_card(self, card, base_time):
         interval = None
         if card.level == 1:
-            interval = timedelta(days=1)
+            interval = timedelta(days=1).total_seconds()
         elif card.level == 2:
-            interval = timedelta(days=4)
+            interval = timedelta(days=4).total_seconds()
         else:
-            interval = card.current_interval * card.easing_factor
+            epoch = datetime.utcfromtimestamp(0)
+            interval = (card.current_interval - epoch).total_seconds() * card.easing_factor
 
-        card.due_time = base_time + interval
-        card.current_interval = interval
+        card.due_time = base_time + timedelta(seconds=interval)
+
+        card.current_interval = datetime.utcfromtimestamp(interval)
         card.level += 1
+        card.learned = True
 
     def answer(self, card, base_time, difficulty):
         self.__calculate_easing_factor(card, difficulty)

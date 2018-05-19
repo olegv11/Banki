@@ -1,0 +1,29 @@
+{% extends "decks/layout.html" %}
+
+{% block body_title %}
+    Создать колоду
+{% endblock %}
+
+{% block body %}
+
+<form action="{{ url_for('create_deck') }}" method="post">
+    <div class="form-group row">
+        <label class="col-sm-2 control-label">Название:</label>
+        <div class="col-sm-7">
+            <input type="text" class="form-control" name="deck_name"/>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label class="col-sm-2 control-label">Описание:</label>
+        <div class="col-sm-7">
+            <input type="text" class="form-control" name="deck_description"/>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-block">
+        <span class="glyphicon glyphicon-plus"></span>
+    </button>
+</form>
+
+
+{% endblock %}

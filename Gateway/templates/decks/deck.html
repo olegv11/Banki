@@ -1,0 +1,90 @@
+{% extends "decks/layout.html" %}
+
+{% block body_title %}
+    Колода
+{% endblock %}
+
+{% block body %}
+<div>
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label class="col-md-2 control-label">Название</label>
+            <div class="col-md-10"><p class="form-control-static" >{{ deck.name }}</p></div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-2 control-label">Описание</label>
+            <div class="col-md-10"><p class="form-control-static" >{{ deck.description }}</p></div>
+        </div>
+    </form>
+</div>
+
+<div class="row">
+    <div class="col-md-4" style="display: inline-block; margin:0">
+        <h4>
+            Новых карт: {{ deck.new_len }}
+            Карт для повторения: {{ deck.rev_len }}
+        </h4>
+    </div>
+    {% if (deck.rev_len + deck.new_len) > 0 %}
+    <div class="col-md-8" >
+        <form action="{{ url_for('learn', deck_id=deck.id) }}">
+            <button type="submit" class="btn btn-primary btn-block">Начать обучение</button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+<p/>
+<div class="row">
+<h3>Новая карта</h3>
+<form action="{{ url_for('create_card') }}" method="post">
+    <input type="hidden" name="deck_id" value="{{ deck.id }}"/>
+    <div class="form-group row">
+        <label class="col-sm-2 control-label">Лицо:</label>
+        <div class="col-sm-7">
+            <input type="text" class="form-control" name="card_front"/>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label class="col-sm-2 control-label">Рубашка:</label>
+        <div class="col-sm-7">
+            <input type="text" class="form-control" name="card_back"/>
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        <button type="submit" class="btn btn-primary btn-block">
+            <span class="glyphicon glyphicon-plus"></span>
+        </button>
+    </div>
+</form>
+</div>
+<p/>
+<h3>Карты</h3>
+<table class="table table-striped">
+    <tr>
+        <th>Лицо</th>
+        <th>Рубашка</th>
+        <th>Истекает</th>
+        <th>Удалить</th>
+    </tr>
+    {% for card in cards %}
+    <tr {% if card.is_due %} class="warning" {% endif %}>
+        <td>{{ card.front }}</td>
+        <td>{{ card.back }}</td>
+        <td>{{ card.due_time }}</td>
+        <td>
+            <form action="{{ url_for('delete_card') }}" method="post">
+                <input type="hidden" name="card_id" value="{{card.id}}">
+                <input type="hidden" name="deck_id" value="{{deck.id}}">
+                <button type="submit" class="btn btn-default">
+                    <span class="glyphicon glyphicon-trash"></span>
+                </button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+
+
+{% endblock %}

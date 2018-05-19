@@ -13,7 +13,7 @@ def get_next_card(deck_id):
     next_card = queues.get_next_card()
     if next_card is None:
         return jsonify({'status': 'no more cards'})
-    return next_card.to_json()
+    return jsonify(next_card.to_json())
 
 
 @app.route('/deck', methods=['POST'])
@@ -90,6 +90,18 @@ def create_card(deck_id):
 
     return jsonify({'id': card.id})
 
+@app.route('/card', methods=['DELETE'])
+def delete_card():
+    card_id = request.values['card_id']
+    card = Card.query.get(int(card_id))
+
+    q = CardQueues(Deck.query.get(card.deck_id).session)
+    q.delete_card(card)
+
+    db.session.delete(card)
+    db.session.commit()
+    return jsonify({})
+
 
 @app.route('/card/<int:card_id>')
 def get_card(card_id):
@@ -106,9 +118,15 @@ def answer_card(card_id):
     diff = string_to_difficulty(request.values['answer'])
 
     sched = CardScheduler()
-    sched.answer(card, datetime.utcnow(), diff)
+    sched.answer(card, datetime.utcnow(), diff.value)
 
-    db.add(card)
-    db.commit()
+    q = CardQueues(Deck.query.get(card.deck_id).session)
+    if diff != AnswerDifficulty.incorrect:
+        q.on_card_correct(card)
+    else:
+        q.on_card_fail(card)
+
+    db.session.add(card)
+    db.session.commit()
 
     return jsonify({})

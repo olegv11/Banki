@@ -6,7 +6,7 @@ from flask import jsonify
 
 class User(db.Model):
     __tablename__ = 'user'
-    mail = db.Column(db.String, primary_key=True)
+    mail = db.Column(db.String, primary_key=False)
     name = db.Column(db.String, nullable=False, unique=True)
     id = db.Column(db.Integer, primary_key=True)
     password = db.Column(db.String, nullable=False)
