@@ -2,7 +2,7 @@ from Decks.application import app, db
 from Decks.models import Card, Deck, LearningSession
 from flask import request, jsonify
 from Decks.CardQueues import CardQueues
-from Decks.Scheduler import AnswerDifficulty, Scheduler, string_to_difficulty
+from Decks.CardScheduler import AnswerDifficulty, CardScheduler, string_to_difficulty
 from datetime import datetime
 
 @app.route('/deck/<int:deck_id>/next')
@@ -10,11 +10,10 @@ def get_next_card(deck_id):
     deck = Deck.query.get_or_404(deck_id)
     session = deck.session
     queues = CardQueues(session)
-    queues.populate_new_queue(10)
     next_card = queues.get_next_card()
     if next_card is None:
         return jsonify({'status': 'no more cards'})
-    return next_card.to_json()
+    return jsonify(next_card.to_json())
 
 
 @app.route('/deck', methods=['POST'])
@@ -32,10 +31,47 @@ def create_deck():
     db.session.commit()
     return jsonify({'id': deck.id})
 
+@app.route('/deck', methods=['DELETE'])
+def delete_deck():
+    deck_id = request.values['deck_id']
+    deck = Deck.query.get(int(deck_id))
+
+    db.session.delete(deck)
+    db.session.commit()
+    return jsonify({})
+
 @app.route('/deck/<int:deck_id>', methods=['GET'])
 def get_deck(deck_id):
     deck = Deck.query.get_or_404(deck_id)
-    return jsonify(deck.to_json())
+    deck_dict = deck.to_json()
+
+    queues = CardQueues(deck.session)
+    deck_dict['new_len'] = queues.new_cards_left()
+    deck_dict['rev_len'] = queues.rev_cards_left()
+
+    return jsonify(deck_dict)
+
+
+@app.route('/decks/<int:user_id>', methods=['GET'])
+def get_decks(user_id):
+    decks = Deck.query.filter(Deck.owner_id == user_id).all()
+    decks_dict = []
+
+    for deck in decks:
+        queues = CardQueues(deck.session)
+        d = deck.to_json()
+        d['new_len'] = queues.new_cards_left()
+        d['rev_len'] = queues.rev_cards_left()
+        decks_dict.append(d)
+
+    return jsonify(decks_dict)
+
+
+@app.route('/deck/<int:deck_id>/cards', methods=['GET'])
+def get_deck_cards(deck_id):
+    cards = Card.query.filter(Card.deck_id == deck_id).all()
+    card_list = list(map(lambda x: x.to_json(), cards))
+    return jsonify(card_list)
 
 
 @app.route('/deck/<int:deck_id>/card', methods=['POST'])
@@ -54,6 +90,18 @@ def create_card(deck_id):
 
     return jsonify({'id': card.id})
 
+@app.route('/card', methods=['DELETE'])
+def delete_card():
+    card_id = request.values['card_id']
+    card = Card.query.get(int(card_id))
+
+    q = CardQueues(Deck.query.get(card.deck_id).session)
+    q.delete_card(card)
+
+    db.session.delete(card)
+    db.session.commit()
+    return jsonify({})
+
 
 @app.route('/card/<int:card_id>')
 def get_card(card_id):
@@ -69,10 +117,16 @@ def answer_card(card_id):
     card = Card.query.get_or_404(card_id)
     diff = string_to_difficulty(request.values['answer'])
 
-    sched = Scheduler()
-    sched.answer(card, datetime.utcnow(), diff)
+    sched = CardScheduler()
+    sched.answer(card, datetime.utcnow(), diff.value)
 
-    db.add(card)
-    db.commit()
+    q = CardQueues(Deck.query.get(card.deck_id).session)
+    if diff != AnswerDifficulty.incorrect:
+        q.on_card_correct(card)
+    else:
+        q.on_card_fail(card)
+
+    db.session.add(card)
+    db.session.commit()
 
     return jsonify({})

@@ -6,3 +6,4 @@ flask-wtf
 flask-redis
 Flask-Migrate
 git+https://github.com/imwithye/flask-inject.git@master
+apscheduler

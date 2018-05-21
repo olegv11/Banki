@@ -1,0 +1,33 @@
+{% extends "decks/layout.html" %}
+
+{% block body_title %}
+    Обучение
+{% endblock %}
+
+{% block body %}
+<h3>{{ card.front }}</h3>
+<button type="button" class="btn btn-default" onclick="revealBack()">Перевернуть</button>
+
+<div id="backside" style="display: none">
+<h3>{{ card.back }}</h3>
+<p/>
+<div class="btn-group btn-group-lg">
+    <form action="{{ url_for('answered') }}" method="post">
+        <input type="hidden" name="deck_id" value="{{ deck_id }}"/>
+        <input type="hidden" name="card_id" value="{{ card.id }}"/>
+        <button name="answer" type="submit" class="btn btn-danger" value="incorrect">Не помню</button>
+        <button name="answer" type="submit" class="btn btn-warning" value="hard">Сложго</button>
+        <button name="answer" type="submit" class="btn btn-primary" value="medium">Нормально</button>
+        <button name="answer" type="submit" class="btn btn-success" value="easy">Легко</button>
+    </form>
+</div>
+</div>
+
+<script>
+function revealBack() {
+    var x = document.getElementById("backside");
+    x.style.display = "block";
+}
+</script>
+
+{% endblock %}

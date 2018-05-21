@@ -9,6 +9,7 @@ class CardTypeEnum(enum.Enum):
     learned = 2,
     due = 3,
 
+
 class Card(db.Model):
     __tablename__ = 'card'
     id = db.Column(db.Integer, primary_key=True)
@@ -32,13 +33,15 @@ class Card(db.Model):
         return '<Card: %r | %r>' % (self.front, self.back)
 
     def to_json(self):
+        epoch = datetime.utcfromtimestamp(0)
         result = {'id': self.id,
                   'front': self.front,
                   'back': self.back,
                   'learned': self.learned,
                   'level': self.level,
-                  'ef': self.easing_factor}
-        return jsonify(result)
+                  'ef': self.easing_factor,
+                  'due_time': (self.due_time - epoch).total_seconds()}
+        return result
 
 
 

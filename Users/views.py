@@ -17,6 +17,7 @@ def create_user():
     user.name = request.values['name']
     user.password = encrypt(unencrypted_password)
     user.mail = request.values['mail']
+    user.role = 'User'
 
     db.session.add(user)
     db.session.commit()
@@ -34,6 +35,12 @@ def create_user_google():
     db.session.add(user)
     db.session.commit()
     return jsonify({'id': user.id})
+
+
+@app.route('/user/<int:user_id>')
+def get_user(user_id):
+    user = User.query.get_or_404(user_id)
+    return jsonify(user.to_json())
 
 @app.route('/user_google/tokens', methods=['POST'])
 def update_user_google():
