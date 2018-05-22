@@ -6,3 +6,5 @@ flask-wtf
 git+https://github.com/imwithye/flask-inject.git@master
 PyJWT
 requests
+requests-oauthlib
+git+https://github.com/mitsuhiko/flask-oauth.git@master

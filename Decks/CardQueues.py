@@ -40,7 +40,9 @@ class CardQueues(object):
                         redis.rpush(self.newQueue, card.id)
                         redis.sadd(self.newSet, card.id)
 
-    def new_cards_left(self):
+    def new_cards_left(self, max_new_cards):
+        with redis_lock:
+            self.populate_new_queue(max_new_cards)
         return redis.llen(self.newQueue)
 
     def rev_cards_left(self):

@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request, abort
 from werkzeug.exceptions import HTTPException, default_exceptions
 from flask_sqlalchemy import SQLAlchemy
+import pika
 
 def json_app(app):
     def error_handling(error):
@@ -22,5 +23,5 @@ def json_app(app):
 
 
 app = json_app(Flask(__name__))
-app.config.from_object('Decks.config')
+app.config.from_object('Billing.config')
 db = SQLAlchemy(app)

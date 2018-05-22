@@ -8,28 +8,23 @@ from datetime import datetime
 
 
 def get_user_id():
-    # return g.user_data['user_id']
-    return 1
+    return g.user_data['user_id']
 
 
 def get_role():
-    # return g.user_data['role']
-    return 'user'
+    return g.user_data['role']
 
 
 @app.route('/decks')
-#@j.should_have_login
+@j.should_have_login
 def get_decks():
-    # decks = requests.get(make_decks_url('/decks/{0}', g.user_data['user_id']))
-
     decks = requests.get(make_decks_url('/decks/{0}', get_user_id()))
     json_decks = decks.json()
     return render_template('decks/index.html', decks=json_decks)
 
-def is_own_deck(owner_id):
-    return True
-    return get_user_id() == owner_id or 'admin' == get_role()
 
+def is_own_deck(owner_id):
+    return get_user_id() == owner_id or 'admin' == get_role()
 
 
 @app.route('/deck/<int:deck_id>', methods=['GET'])
@@ -67,14 +62,14 @@ def can_create_more_decks(user_id):
     return available_decks > len(list(json_decks))
 
 @app.route('/create_deck', methods=['GET'])
-#@j.should_have_login
+@j.should_have_login
 def create_deck_page():
     if not can_create_more_decks(get_user_id()):
         raise BankiException(code=403, description='Нельзя создать больше колод')
     return render_template('decks/createDeck.html', user_id=get_user_id())
 
 @app.route('/create_deck', methods=['POST'])
-#@j.should_have_login
+@j.should_have_login
 def create_deck():
     name = request.values['deck_name']
 
@@ -108,7 +103,7 @@ def delete_deck():
 
 
 @app.route('/create_card', methods=['POST'])
-#@j.should_have_login
+@j.should_have_login
 def create_card():
     deck_id = request.values['deck_id']
     card_front = request.values['card_front']
@@ -122,7 +117,7 @@ def create_card():
 
 
 @app.route('/delete_card', methods=['POST'])
-#@j.should_have_login
+@j.should_have_login
 def delete_card():
     card_id = request.values['card_id']
     deck_id = request.values['deck_id']
@@ -133,7 +128,7 @@ def delete_card():
 
 
 @app.route('/deck/<int:deck_id>/learn', methods=['GET'])
-#@j.should_have_login
+@j.should_have_login
 def learn(deck_id):
     resp = requests.get(make_decks_url('/deck/{0}/next', deck_id))
     if resp.status_code != 200:
@@ -144,7 +139,7 @@ def learn(deck_id):
     return render_template('decks/session.html', card=next_card, deck_id=deck_id)
 
 @app.route('/card/answered', methods=['POST'])
-#@j.should_have_login
+@j.should_have_login
 def answered():
     card_id = request.values['card_id']
     answer = request.values['answer']

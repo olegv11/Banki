@@ -7,8 +7,8 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 # Define the database - we are working with
 # SQLite for this example
-#SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'app.db')
-SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://postgres:postgres@localhost/banki'
+SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'app.db')
+#SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://postgres:postgres@localhost/banki'
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 REDIS_URL = "redis://localhost:6379/"
@@ -31,3 +31,4 @@ CSRF_SESSION_KEY = "secret"
 SECRET_KEY = "secret"
 
 PORT = 5000
+

@@ -20,17 +20,16 @@
                  <li><a href="{{ url_for('get_decks') }}">Колоды</a></li>
 
 
-                 {% if g.logged_in %}
-                    <li><a href="{url_for('users.logout'})">Logout</a></li>
+                 {% if g.user_data %}
+                    <li><a href="{{url_for('logout')}}">Logout</a></li>
                  {% else %}
-                    <li><a href="{{ url_for('login_page') }} ">Войти</a></li>
-                    <!--<li><a href=" url_for('users.register') ">Login</a></li>-->
+                    <li><a href="{{ url_for('register_page') }} ">Регистрация</a></li>
+                    <li><a href=" {{ url_for('login_page') }} ">Войти</a></li>
                  {% endif %}
-                 <!--
-                 {% if g.is_admin %}
-                    <li><a href=" url_for('statistics.index')">Статистика</a></li>
+                 {% if g.user_data['role'] == 'admin' %}
+                     <li>Я админ!</li>
+                    <li><a href="{{ url_for('get_stat') }}">Статистика</a></li>
                  {% endif %}
-             -->
              </ul>
 
         </div>

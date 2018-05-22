@@ -1,8 +1,11 @@
 Flask
 flask-sqlalchemy
+flask-redis
 psycopg2
 psycopg2-binary
 flask-wtf
+flask-migrate
 pika
 git+https://github.com/imwithye/flask-inject.git@master
 pika
+apscheduler

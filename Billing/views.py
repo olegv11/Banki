@@ -6,7 +6,8 @@ from datetime import datetime
 @app.route('/bill/<int:bill_id>', methods=['GET'])
 def get_bill(bill_id):
     bill = Bill.query.get_or_404(bill_id)
-    return jsonify(bill)
+    return jsonify(bill.to_dict())
+
 
 @app.route('/bill', methods=['POST'])
 def create_bill():
@@ -18,3 +19,4 @@ def create_bill():
 
     db.session.add(bill)
     db.session.commit()
+    return jsonify({'id': bill.id})
