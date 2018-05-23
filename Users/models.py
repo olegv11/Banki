@@ -11,7 +11,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     password = db.Column(db.String)
     registration_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    role = db.Column(db.String, nullable=False, default='User')
+    role = db.Column(db.String, nullable=False, default='user')
 
     google_access_token = db.Column(db.String)
 
@@ -33,3 +33,9 @@ class UserBill(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     bill_id = db.Column(db.Integer, nullable=False)
+
+    def to_json(self):
+        result = {'id': self.id,
+                  'user_id': self.user_id,
+                  'bill_id': self.bill_id}
+        return result

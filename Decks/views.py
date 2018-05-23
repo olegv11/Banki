@@ -36,6 +36,9 @@ def delete_deck():
     deck_id = request.values['deck_id']
     deck = Deck.query.get(int(deck_id))
 
+    for card in deck.cards:
+        db.session.delete(card)
+
     db.session.delete(deck)
     db.session.commit()
     return jsonify({})
@@ -82,6 +85,7 @@ def create_card(deck_id):
     card.front = request.values['front']
     card.back = request.values['back']
     card.number_in_deck = len(deck.cards) + 1
+    card.deck_id = deck_id
     deck.cards.append(card)
 
     db.session.add(card)

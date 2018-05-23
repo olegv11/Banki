@@ -1,9 +1,10 @@
-from flask import Flask, jsonify, request, abort
+from flask import Flask, jsonify, request, abort, render_template
 from werkzeug.exceptions import HTTPException, default_exceptions
 from flask_inject import Inject
 from flask_migrate import Migrate
 from Gateway.auth import Jwt
 from Gateway.exceptions import BankiException, RemoteBankiException
+import requests
 
 
 app = Flask(__name__)
@@ -12,10 +13,17 @@ inject = Inject(app)
 j = Jwt(app)
 
 
+
+
 @app.errorhandler(BankiException)
 def handle_exception(error: BankiException):
     app.logger.error('Exception\nCode: {0}\nDescription: {1}'.format(error.code, error.description))
-    return jsonify(error.to_dict())
+    return render_template('error.html')
+
+@app.errorhandler(requests.RequestException)
+def handle_exception(error):
+    return render_template('error.html')
+
 
 
 @app.errorhandler(RemoteBankiException)

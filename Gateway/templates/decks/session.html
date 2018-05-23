@@ -6,7 +6,7 @@
 
 {% block body %}
 <h3>{{ card.front }}</h3>
-<button type="button" class="btn btn-default" onclick="revealBack()">Перевернуть</button>
+<button id="revealButton" type="button" class="btn btn-default">Перевернуть</button>
 
 <div id="backside" style="display: none">
 <h3>{{ card.back }}</h3>
@@ -24,10 +24,11 @@
 </div>
 
 <script>
-function revealBack() {
-    var x = document.getElementById("backside");
-    x.style.display = "block";
-}
+$(document).ready(function () {
+    $("#revealButton").click(function () {
+       $("#backside").slideDown();
+    });
+});
 </script>
 
 {% endblock %}

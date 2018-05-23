@@ -1,10 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "decks/layout.html" %}
 
-</body>
-</html>
+{% block body_title %}
+    Купить колоду
+{% endblock %}
+
+{% block body %}
+
+<form action="{{ url_for('buy_deck', user_id=g.user_data['user_id']) }}" method="post">
+    <div class="form-group row">
+        <label class="col-sm-2 control-label">Номер карты:</label>
+        <div class="col-sm-7">
+            <input type="text" class="form-control" name="card_number"/>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label class="col-sm-2 control-label">Сумма:</label>
+        <div class="col-sm-7">
+            <input type="text" class="form-control" name="deck_description" value="100 р." disabled/>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-block">
+        <span class="glyphicon glyphicon-plus"></span>
+    </button>
+</form>
+
+
+{% endblock %}

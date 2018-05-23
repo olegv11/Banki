@@ -6,37 +6,92 @@
 
 {% block body %}
     <div class="container">
-        <h2>Регистрация</h2>
+        <h3 style="color: red">{{ error }}</h3>
         <form action="#" method="post">
             <div class="form-group row">
-                <label class="col-sm-2 control-label">Имя</label>
+                <label class="col-sm-2 control-label" for="nameField">Имя</label>
                 <div class="col-sm-7">
-                    <input type="text" class="form-control" name="name"/>
+                    <input type="text" class="form-control" name="name" id="nameField"/>
+                </div>
+                <div class="col-sm-3">
+                    <small id="nameError" class="text-danger" style="display: none">
+                      Имя должно быть непустым
+                    </small>
                 </div>
             </div>
             <div class="form-group row">
-                <label class="col-sm-2 control-label">Email:</label>
+                <label class="col-sm-2 control-label" for="mailField">Email:</label>
                 <div class="col-sm-7">
-                    <input type="text" class="form-control" name="email"/>
+                    <input type="text" class="form-control" name="mail" id="mailField"/>
+                </div>
+                <div class="col-sm-3">
+                    <small id="mailError" class="text-danger" style="display: none">
+                      Недопустимый email
+                    </small>
                 </div>
             </div>
             <div class="form-group row">
-                <label class="col-sm-2 control-label">Пароль:</label>
+                <label class="col-sm-2 control-label" for="passwordField">Пароль:</label>
                 <div class="col-sm-7">
-                    <input type="text" class="form-control" name="password"/>
+                    <input type="password" class="form-control" name="password" id="passwordField"/>
                 </div>
+                <div class="col-sm-3">
+                    <small id="passwordError" class="text-danger" style="display: none">
+                      Пароль долженн состоять по крайней мере из 4-х символов
+                    </small>
+                </div>
+
             </div>
 
-            <button type="submit" class="btn btn-primary btn-block">
+            <button type="submit" class="btn btn-primary btn-block" id="regBtn">
                 Зарегистрироваться
             </button>
         </form>
-    <h2>Регистрация через Google</h2>
-    <form action="#" method="post">
-        <button type="submit" class="btn btn-primary btn-block">
-                Зарегистрироваться через Google
-        </button>
-    </form>
     </div>
+
+<script>
+function validateEmail(email) {
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+}
+
+function validatePassword(password) {
+    return password.length >= 4
+}
+
+window.onload = function () {
+    var passwordOk = false;
+    var mailOk = false;
+    var nameOk = false;
+
+    var checkButton = function () {
+        var everythingOk = nameOk && passwordOk && mailOk;
+        document.getElementById("regBtn").disabled = !everythingOk;
+    };
+
+    var nameField = document.getElementById("nameField");
+    nameField.oninput = function() {
+      nameOk = nameField.value.length > 0;
+      document.getElementById("nameError").style.display = nameOk ? "none" : "block";
+      checkButton();
+    };
+
+    var passwordField = document.getElementById("passwordField");
+    passwordField.oninput = function() {
+        passwordOk = passwordField.value.length >= 4;
+        document.getElementById("passwordError").style.display = passwordOk ? "none" : "block";
+        checkButton();
+    };
+
+    var mailField = document.getElementById("mailField");
+    mailField.oninput = function() {
+        mailOk = validatePassword(mailField.value);
+        document.getElementById("mailError").style.display = mailOk ? "none" : "block";
+        checkButton();
+    };
+
+    document.getElementById("regBtn").disabled = true;
+}
+</script>
 
 {% endblock %}

@@ -22,5 +22,5 @@ def json_app(app):
 
 
 app = json_app(Flask(__name__))
-app.config.from_object('Decks.config')
+app.config.from_object('Statistics.config')
 db = SQLAlchemy(app)

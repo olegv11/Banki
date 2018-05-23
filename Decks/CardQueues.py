@@ -18,7 +18,7 @@ class CardQueues(object):
     def populate_due_queue(self, now: datetime):
         with redis_lock:
             due_cards = Card.query.filter(Card.deck_id == self.deck.id, Card.learned.is_(True),
-                                      now > Card.due_time).first()
+                                      now > Card.due_time).all()
             if due_cards is None:
                 return
             for card in due_cards:
@@ -40,9 +40,7 @@ class CardQueues(object):
                         redis.rpush(self.newQueue, card.id)
                         redis.sadd(self.newSet, card.id)
 
-    def new_cards_left(self, max_new_cards):
-        with redis_lock:
-            self.populate_new_queue(max_new_cards)
+    def new_cards_left(self):
         return redis.llen(self.newQueue)
 
     def rev_cards_left(self):

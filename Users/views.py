@@ -17,7 +17,9 @@ def create_user():
     user.name = request.values['name']
     user.password = encrypt(unencrypted_password)
     user.mail = request.values['mail']
-    user.role = request.values['role'] or 'user'
+    user.role = 'user'
+    if 'role' in request.values:
+        user.role = request.values['role']
 
     if User.query.filter_by(name=user.name).first() is not None:
         return jsonify({'status': 'Name exists'})
@@ -82,7 +84,7 @@ def update_user_google():
     db.session.commit()
     return jsonify({'id': user.id})
 
-@app.route('/user/<int:user_id>bill', methods=['POST'])
+@app.route('/user/<int:user_id>/bill', methods=['POST'])
 def user_bought(user_id):
     bill_id = request.values['bill_id']
 
@@ -90,7 +92,11 @@ def user_bought(user_id):
     ub.user_id = user_id
     ub.bill_id = bill_id
 
+    user = User.query.get_or_404(user_id)
+    user.available_decks += 1
+
     db.session.add(ub)
+    db.session.add(user)
     db.session.commit()
     return jsonify({'id': ub.id})
 
@@ -98,7 +104,8 @@ def user_bought(user_id):
 @app.route('/user/<int:user_id>/bill', methods=['GET'])
 def user_bills(user_id):
     result = UserBill.query.filter_by(user_id=user_id).all()
-    return jsonify(result)
+    result_json = list(map(lambda x: x.to_json()['bill_id'], result))
+    return jsonify(result_json)
 
 
 @app.route('/login', methods=['POST'])

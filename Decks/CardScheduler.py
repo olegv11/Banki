@@ -8,10 +8,10 @@ class AnswerDifficulty(enum.Enum):
     incorrect = 1
 
 def string_to_difficulty(s:str):
-    d = {'easy':AnswerDifficulty.easy,
-         'medium':AnswerDifficulty.medium,
-         'hard':AnswerDifficulty.hard,
-         'incorrect':AnswerDifficulty.incorrect}
+    d = {'easy': AnswerDifficulty.easy,
+         'medium': AnswerDifficulty.medium,
+         'hard': AnswerDifficulty.hard,
+         'incorrect': AnswerDifficulty.incorrect}
 
     return d.get(s.strip(' ').lower(), None)
 
@@ -42,7 +42,7 @@ class CardScheduler(object):
     def answer(self, card, base_time, difficulty):
         self.__calculate_easing_factor(card, difficulty)
 
-        if difficulty == AnswerDifficulty.incorrect:
-            card.level = 1
-
         self.__schedule_card(card, base_time)
+
+        if AnswerDifficulty(difficulty) == AnswerDifficulty.incorrect:
+            card.level = 1

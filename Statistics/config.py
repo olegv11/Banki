@@ -5,6 +5,15 @@ DEBUG = True
 import os
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
+# Define the database - we are working with
+# SQLite for this example
+SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'app.db')
+#SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://postgres:postgres@localhost/banki'
+SQLALCHEMY_TRACK_MODIFICATIONS = True
+
+REDIS_URL = "redis://localhost:6379/"
+DATABASE_CONNECT_OPTIONS = {}
+
 # Application threads. A common general assumption is
 # using 2 per available processor cores - to handle
 # incoming requests using one and performing background
@@ -21,10 +30,4 @@ CSRF_SESSION_KEY = "secret"
 # Secret key for signing cookies
 SECRET_KEY = "secret"
 
-PORT = 5002
-
-DECKS_URL = "http://127.0.0.1:5000"
-USERS_URL = "http://127.0.0.1:5001"
-BILLING_URL = "http://127.0.0.1:5003"
-STAT_URL = "http://127.0.0.1:5005"
-
+PORT = 5005

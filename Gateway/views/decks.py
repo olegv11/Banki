@@ -51,7 +51,6 @@ def get_deck(deck_id):
 
 
 def can_create_more_decks(user_id):
-    return True
     user = requests.get(make_users_url('/user/{0}', user_id))
     user_json = user.json()
     available_decks = user_json['available_decks']
@@ -65,7 +64,7 @@ def can_create_more_decks(user_id):
 @j.should_have_login
 def create_deck_page():
     if not can_create_more_decks(get_user_id()):
-        raise BankiException(code=403, description='Нельзя создать больше колод')
+        return redirect(url_for('buy_deck_page', user_id=get_user_id()))
     return render_template('decks/createDeck.html', user_id=get_user_id())
 
 @app.route('/create_deck', methods=['POST'])
@@ -80,6 +79,7 @@ def create_deck():
     created_deck = requests.post(make_decks_url('/deck'),
                   data={'name': name, 'description': description, 'owner_id': get_user_id()})
     deck_json = created_deck.json()
+    send_statistics('DECK_CREATED')
     return redirect(url_for('get_deck', deck_id=deck_json['id']))
 
 
@@ -99,6 +99,7 @@ def delete_deck():
     resp = requests.delete(make_decks_url("/deck"), data={'deck_id': deck_id})
     if resp.status_code != 200:
         handle_request_exception(resp.status_code, resp, 'Could not delete deck!')
+    send_statistics('DECK_DELETED')
     return redirect(url_for('get_decks'))
 
 

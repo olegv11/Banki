@@ -6,6 +6,7 @@ from Gateway.views.common import *
 from Gateway.exceptions import BankiException, RemoteBankiException
 from datetime import datetime
 from flask_oauth import OAuth
+import os
 
 
 def get_user_id():
@@ -25,7 +26,21 @@ def register_page():
 
 @app.route('/user/register', methods=['POST'])
 def register():
-    return render_template('users/register.html')
+    name = request.values['name']
+    mail = request.values['mail']
+    password = request.values['password']
+    reg_request = requests.post(make_users_url('/user'),
+                                data={'name': name, 'mail': mail, 'password': password})
+    if reg_request.status_code != 200:
+        handle_request_exception(reg_request.status_code, reg_request, 'Could not create user!')
+
+    reg_json = reg_request.json()
+    if 'id' not in reg_json:
+        return render_template('users/register.html', error='Пользователь с такой почтой уже существует!')
+
+    send_statistics('REGISTERED', 'SITE')
+
+    return redirect(url_for('user_page', user_id=reg_json['id']))
 
 
 @app.route('/user/logout', methods=['GET'])
@@ -53,7 +68,8 @@ def login():
 
     l = login_attempt.json()
     resp = make_response(redirect(url_for('user_page', user_id=l['id'])))
-    j.set_token(resp, l['id'], l['name'], l['mail'],l['role'])
+    j.set_token(resp, l['id'], l['name'], l['mail'], l['role'])
+    send_statistics('LOGIN', 'SITE')
     return resp
 
 
@@ -65,18 +81,55 @@ def user_page(user_id):
     user = requests.get(make_users_url('/user/{0}', user_id))
     if user.status_code != 200:
         handle_request_exception(user.status_code, user, 'Could not get user!')
+    user_json = user.json()
 
-    bills = requests.get(make_bills_url('/user/{0}/bill', user_id))
-    if bills.status_code != 200:
-        handle_request_exception(bills.status_code, bills, 'Could not get bills for user!')
+    bills = []
 
-    return render_template('users/user.html', user=user.json(), bills = bills.json())
+    bill_ids = requests.get(make_users_url('/user/{0}/bill', user_id))
+    if bill_ids.status_code == 200:
+        bills_ids_json = bill_ids.json()
+        bills_req = requests.get(make_bills_url('/bills'), params={'ids': bill_ids})
+        if bills_req.status_code == 200:
+            bills = bills_req.json()
+            for b in bills:
+                b['date'] = datetime.utcfromtimestamp(b['date'])
+
+    decks = requests.get(make_decks_url('/decks/{0}', 1))
+    if decks.status_code == 200:
+        json_decks = decks.json()
+        user_json['decks_number'] = str(len(json_decks))
+    else:
+        user_json['decks_number'] = 'N/A'
+
+    return render_template('users/user.html', user=user_json, bills=bills)
 
 
 @app.route('/user/<int:user_id>/buy', methods=['GET'])
 @j.should_have_login
-def user_buy(user_id):
+def buy_deck_page(user_id):
     return render_template('users/buy.html', user_id=user_id)
+
+@app.route('/user/<int:user_id>/buy', methods=['POST'])
+@j.should_have_login
+def buy_deck(user_id):
+    amount = 100
+    card_number = request.values['card_number']
+    bought_req = requests.post(make_bills_url('/bill'),
+                  data={'amount': amount, 'card_number': card_number,
+                        'description': 'Покупка колоды'})
+    if bought_req.status_code != 200:
+        handle_request_exception(bought_req.status_code, bought_req)
+
+    bill_id = bought_req.json()['id']
+    try:
+        users_req = requests.post(make_users_url('/user/{0}/bill', g.user_data['user_id']),
+                                  data={'bill_id': bill_id})
+        if users_req.status_code != 200:
+            requests.delete(make_bills_url('/bill/{0}', bill_id))
+    except requests.ConnectionError:
+        requests.delete(make_bills_url('/bill/{0}', bill_id))
+    return redirect(url_for('user_page', user_id=g.user_data['user_id']))
+
 
 oauth = OAuth()
 google = oauth.remote_app('google',
@@ -88,8 +141,8 @@ google = oauth.remote_app('google',
                           access_token_url='https://accounts.google.com/o/oauth2/token',
                           access_token_method='POST',
                           access_token_params={'grant_type': 'authorization_code'},
-                          consumer_key=app.config['GOOGLE_CLIENT_ID'],
-                          consumer_secret=app.config['GOOGLE_CLIENT_SECRET'])
+                          consumer_key=os.environ['GOOGLE_CLIENT_ID'],
+                          consumer_secret=os.environ['GOOGLE_CLIENT_SECRET'])
 
 
 @app.route('/logingoogle')
@@ -119,6 +172,7 @@ def oauthCallback(resp):
         userJson = user.json()
         newResponse = make_response(redirect(url_for('user_page', user_id=userJson['id'])))
         j.set_token(newResponse, userJson['id'], userJson['name'], userJson['mail'], userJson['role'])
+        send_statistics('LOGIN', 'GOOGLE')
         return newResponse
     else:
         reg = requests.post(make_users_url('/user_google'),
@@ -132,10 +186,8 @@ def oauthCallback(resp):
         userJson = user.json()
         newResponse = make_response(redirect(url_for('user_page', user_id=userJson['id'])))
         j.set_token(resp, userJson['id'], userJson['name'], userJson['mail'], userJson['role'])
+        send_statistics('REGISTERED', 'GOOGLE')
         return newResponse
-
-
-
 
 
 @google.tokengetter
