@@ -1,3 +1,3 @@
 from Gateway import app
 
-app.run(port=app.config['PORT'])
+app.run(host="0.0.0.0")

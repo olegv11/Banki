@@ -141,8 +141,8 @@ google = oauth.remote_app('google',
                           access_token_url='https://accounts.google.com/o/oauth2/token',
                           access_token_method='POST',
                           access_token_params={'grant_type': 'authorization_code'},
-                          consumer_key=os.environ['GOOGLE_CLIENT_ID'],
-                          consumer_secret=os.environ['GOOGLE_CLIENT_SECRET'])
+                          consumer_key=os.getenv('GOOGLE_CLIENT_ID'),
+                          consumer_secret=os.getenv('GOOGLE_CLIENT_SECRET'))
 
 
 @app.route('/logingoogle')
