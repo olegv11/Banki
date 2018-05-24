@@ -1,4 +1,6 @@
-from Billing import app, db
+from Billing import app as application, db
 
 db.create_all()
-app.run(host="0.0.0.0", port=app.config['PORT'])
+
+if __name__ == '__main__':
+    application.run(host="0.0.0.0", port=application.config['PORT'])
