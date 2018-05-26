@@ -1,2 +1,4 @@
 #! /bin/bash
-uwsgi --ini statistics.ini & disown
+uwsgi --stop /tmp/statistics.pid
+sleep 2
+uwsgi --ini statistics.ini & --daemonize /tmp/statisticslog.log
