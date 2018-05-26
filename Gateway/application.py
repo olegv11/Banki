@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, abort, render_template
+from flask import Flask, jsonify, request, abort, render_template, url_for
 from werkzeug.exceptions import HTTPException, default_exceptions
 from flask_inject import Inject
 from flask_migrate import Migrate
@@ -18,6 +18,11 @@ def handle_exception(error):
     print(error)
     return render_template('error.html')
 
+
+@app.errorhandler(401)
+def handle_401(error):
+    print(error)
+    return render_template(url_for('login'))
 
 @app.errorhandler(403)
 def handle_403(error):
