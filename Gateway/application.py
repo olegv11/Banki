@@ -5,7 +5,7 @@ from flask_migrate import Migrate
 from Gateway.auth import Jwt
 from Gateway.exceptions import BankiException, RemoteBankiException
 import requests
-
+import json
 
 app = Flask(__name__)
 app.config.from_object('Gateway.config')
@@ -13,7 +13,10 @@ inject = Inject(app)
 j = Jwt(app)
 
 
-
+@app.errorhandler(Exception)
+def handle_exception(error):
+    print(error)
+    return render_template('error.html')
 
 @app.errorhandler(BankiException)
 def handle_exception(error: BankiException):

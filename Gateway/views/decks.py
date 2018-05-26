@@ -18,7 +18,9 @@ def get_role():
 @app.route('/decks')
 @j.should_have_login
 def get_decks():
+    print('Getting decks')
     decks = requests.get(make_decks_url('/decks/{0}', get_user_id()))
+    print('Got decks')
     json_decks = decks.json()
     return render_template('decks/index.html', decks=json_decks)
 
@@ -50,11 +52,11 @@ def get_deck(deck_id):
 
 
 def can_create_more_decks(user_id):
-    user = requests.get(make_users_url('/user/{0}', user_id))
+    user = requests.get(make_users_url('/user/{0}', get_user_id()))
     user_json = user.json()
     available_decks = user_json['available_decks']
 
-    decks = requests.get(make_decks_url('/decks/{0}', 1))
+    decks = requests.get(make_decks_url('/decks/{0}', get_user_id()))
     json_decks = decks.json()
 
     return available_decks > len(list(json_decks))
