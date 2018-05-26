@@ -115,6 +115,8 @@ def user_page(user_id):
 @app.route('/user/<int:user_id>/buy', methods=['GET'])
 @j.should_have_login
 def buy_deck_page(user_id):
+    if not is_own_page(user_id):
+        raise BankiException(code=403, description='No rights to see the user page')
     return render_template('users/buy.html', user_id=user_id)
 
 @app.route('/user/<int:user_id>/buy', methods=['POST'])
