@@ -22,6 +22,7 @@ def handle_exception(error: BankiException):
 
 @app.errorhandler(requests.RequestException)
 def handle_exception(error):
+    print(error)
     return render_template('error.html')
 
 

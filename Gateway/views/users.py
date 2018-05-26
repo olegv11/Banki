@@ -58,7 +58,7 @@ def login_page():
 def login():
     name = request.values['name']
     password = request.values['password']
-
+    print('LOGGING IN:' + make_users_url('/logjn'))
     login_attempt = requests.post(make_users_url('/login'),
                                   data={'name': name, 'password': password})
     if login_attempt.status_code == 401:
@@ -94,9 +94,10 @@ def user_page(user_id):
             for b in bills:
                 b['date'] = datetime.utcfromtimestamp(b['date'])
 
-    decks = requests.get(make_decks_url('/decks/{0}', 1))
+    decks = requests.get(make_decks_url('/decks/{0}', user_id))
     if decks.status_code == 200:
         json_decks = decks.json()
+        print(json_decks)
         user_json['decks_number'] = str(len(json_decks))
     else:
         user_json['decks_number'] = 'N/A'
@@ -185,7 +186,7 @@ def oauthCallback(resp):
             handle_request_exception(user.status_code, user, 'Something happened')
         userJson = user.json()
         newResponse = make_response(redirect(url_for('user_page', user_id=userJson['id'])))
-        j.set_token(resp, userJson['id'], userJson['name'], userJson['mail'], userJson['role'])
+        j.set_token(newResponse, userJson['id'], userJson['name'], userJson['mail'], userJson['role'])
         send_statistics('REGISTERED', 'GOOGLE')
         return newResponse
 

@@ -42,7 +42,6 @@ def get_deck(deck_id):
     for c in json_cards:
         c['due_time'] = datetime.utcfromtimestamp(c['due_time'])
         c['is_due'] = datetime.utcnow() > c['due_time']
-        c['due_time'] = c['due_time'].astimezone()
 
     if cards.status_code != 200:
         handle_request_exception(deck.status_code, deck, 'Could not get cards!')
