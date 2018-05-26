@@ -40,7 +40,14 @@ def register():
 
     send_statistics('REGISTERED', 'SITE')
 
-    return redirect(url_for('user_page', user_id=reg_json['id']))
+    user = requests.get(make_users_url('/user/mail/{0}', mail))
+    if user.status_code != 200:
+        handle_request_exception(user.status_code, user, 'Something happened')
+    userJson = user.json()
+    newResponse = make_response(redirect(url_for('user_page', user_id=userJson['id'])))
+    j.set_token(newResponse, userJson['id'], userJson['name'], userJson['mail'], userJson['role'])
+
+    return newResponse
 
 
 @app.route('/user/logout', methods=['GET'])
