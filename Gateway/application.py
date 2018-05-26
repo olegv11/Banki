@@ -21,11 +21,12 @@ def handle_exception(error):
 @app.errorhandler(BankiException)
 def handle_exception(error: BankiException):
     app.logger.error('Exception\nCode: {0}\nDescription: {1}'.format(error.code, error.description))
+    if error.code == 404:
+        return render_template('404.html')
     return render_template('error.html')
 
 @app.errorhandler(requests.RequestException)
 def handle_exception(error):
-    print(error)
     return render_template('error.html')
 
 

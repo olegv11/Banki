@@ -84,7 +84,7 @@ def login():
 @j.should_have_login
 def user_page(user_id):
     if not is_own_page(user_id):
-        raise BankiException(code=403, description='No rights to see the user page')
+        raise werkzeug.exceptions.Forbidden('No rights to see the user page')
     user = requests.get(make_users_url('/user/{0}', user_id))
     if user.status_code != 200:
         handle_request_exception(user.status_code, user, 'Could not get user!')
@@ -116,7 +116,7 @@ def user_page(user_id):
 @j.should_have_login
 def buy_deck_page(user_id):
     if not is_own_page(user_id):
-        raise BankiException(code=403, description='No rights to see the user page')
+        raise werkzeug.exceptions.Forbidden('No rights to see the user page')
     return render_template('users/buy.html', user_id=user_id)
 
 @app.route('/user/<int:user_id>/buy', methods=['POST'])
@@ -128,7 +128,7 @@ def buy_deck(user_id):
                   data={'amount': amount, 'card_number': card_number,
                         'description': 'Покупка колоды'})
     if bought_req.status_code != 200:
-        handle_request_exception(bought_req.status_code, bought_req)
+        handle_request_exception(bought_req.status_code, bought_req, 'Could not buy deck')
 
     bill_id = bought_req.json()['id']
     try:

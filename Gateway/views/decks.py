@@ -74,7 +74,7 @@ def create_deck():
     name = request.values['deck_name']
 
     if not can_create_more_decks(get_user_id()):
-        raise BankiException(code=403, description='Нельзя создать больше колод')
+        raise werkzeug.exceptions.Forbidden('Нельзя создать больше колод')
 
     description = request.values['deck_description']
     created_deck = requests.post(make_decks_url('/deck'),

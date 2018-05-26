@@ -4,6 +4,7 @@ from Decks.CardQueues import CardQueues
 from apscheduler.triggers.interval import IntervalTrigger
 from datetime import datetime
 
+
 def update_due_cards():
     sessions = LearningSession.query.all()
     for s in sessions:
