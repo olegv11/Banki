@@ -18,6 +18,17 @@ def handle_exception(error):
     print(error)
     return render_template('error.html')
 
+
+@app.errorhandler(403)
+def handle_403(error):
+    print(error)
+    return render_template('403.html')
+
+@app.errorhandler(404)
+def handle_404(error):
+    print(error)
+    return render_template('404.html')
+
 @app.errorhandler(BankiException)
 def handle_exception(error: BankiException):
     app.logger.error('Exception\nCode: {0}\nDescription: {1}'.format(error.code, error.description))
