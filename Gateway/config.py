@@ -23,8 +23,8 @@ SECRET_KEY = "secret"
 
 PORT = 5002
 
-DECKS_URL = "http://127.0.0.1:5000"
-USERS_URL = "http://127.0.0.1:5001"
-BILLING_URL = "http://127.0.0.1:5003"
-STAT_URL = "http://127.0.0.1:5005"
+DECKS_URL = "deck.webanki.net:5002"
+USERS_URL = "user.webanki.net:5004"
+BILLING_URL = "billing.webanki.net:5001"
+STAT_URL = "statistics.webanki.net:5003"
 

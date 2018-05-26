@@ -1,2 +1,3 @@
 #! /bin/bash
-uwsgi --ini gateway.ini & disown
+uwsgi --stop /tmp/gateway.pid
+uwsgi --ini gateway.ini --daemonize /tmp/gatewaylog.log
