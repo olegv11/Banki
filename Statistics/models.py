@@ -12,3 +12,8 @@ class StatisticsItem(db.Model):
     data = db.Column(db.String, nullable=True)
 
 
+    def to_json(self):
+        return {'id': self.id,
+                'date': self.date,
+                'type': self.type,
+                'data': self.data}

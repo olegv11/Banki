@@ -11,7 +11,8 @@ def average(type):
 
 
 def all(type):
-    return StatisticsItem.query.filter_by(type=type).all()
+    result = StatisticsItem.query.filter_by(type=type).all()
+    return list(map(lambda x: x.to_json(), result))
 
 
 operations = {
@@ -35,9 +36,7 @@ def save_datum():
 def get_datum():
     type = request.args.get('type')
     operation = request.args.get('operation', default='ALL')
-
-    if type not in operations:
+    if operation not in operations:
         raise werkzeug.exceptions.BadRequest('Operation not supported')
-
-    result = operation['type']()
+    result = operations[operation](type)
     return jsonify({'result': result})
